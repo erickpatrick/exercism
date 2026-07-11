@@ -1,7 +1,6 @@
 package isbnverifier
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -19,12 +18,20 @@ func IsValidISBN(isbn string) bool {
 
 	sum := 0
 	multiplier := 10
-	i := 0
 
-	for {
+	for i := range 10 {
+		switch i {
+		case 0, 1, 2, 3, 4, 5, 6, 7, 8:
+			sum += int(cleanISBN[i]-'0') * multiplier
+			multiplier--
+		case 9:
+			if rune(cleanISBN[i]) == 'X' {
+				sum += 10
+			} else {
+				sum += int(cleanISBN[i] - '0')
+			}
+		}
 	}
-
-	fmt.Println(cleanISBN)
 
 	return sum%11 == 0
 }
