@@ -16,9 +16,17 @@ func New(h, m int) Clock {
 		hours = 24 + hours
 	}
 
+	if hours == 0 {
+		hours = 24
+	}
+
 	if minutes < 0 {
 		hours -= 1
 		minutes += 60
+	}
+
+	if hours == 24 {
+		hours = 0
 	}
 
 	return Clock{
@@ -28,11 +36,11 @@ func New(h, m int) Clock {
 }
 
 func (c Clock) Add(m int) Clock {
-	panic("Please implement the Add function")
+	return New(c.h, c.m+m)
 }
 
 func (c Clock) Subtract(m int) Clock {
-	panic("Please implement the Subtract function")
+	return New(c.h, c.m-m)
 }
 
 func (c Clock) String() string {
