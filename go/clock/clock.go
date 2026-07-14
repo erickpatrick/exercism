@@ -2,6 +2,11 @@ package clock
 
 import "fmt"
 
+const (
+	hoursInADay    = 24
+	minutesInAHour = 60
+)
+
 // Define the Clock type here.
 type Clock struct {
 	h int
@@ -9,23 +14,26 @@ type Clock struct {
 }
 
 func New(h, m int) Clock {
-	hours := (0 + h + (m / 60)) % 24
-	minutes := 0 + m%60
+	hours := (0 + h + (m / minutesInAHour)) % hoursInADay
+	minutes := 0 + m%minutesInAHour
 
 	if hours < 0 {
-		hours = 24 + hours
+		hours = hoursInADay + hours
 	}
 
+	// to make counting easier, we midnight to 24h
 	if hours == 0 {
-		hours = 24
+		hours = hoursInADay
 	}
 
 	if minutes < 0 {
+		// if negative minutes we need go hour backwards
 		hours -= 1
-		minutes += 60
+		minutes += minutesInAHour
 	}
 
-	if hours == 24 {
+	// reset to 0 when reaching 24h
+	if hours == hoursInADay {
 		hours = 0
 	}
 
