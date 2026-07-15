@@ -52,15 +52,15 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 	}
 
 	// Parallelism, always a great idea
-	co := make(chan struct {
+	channel := make(chan struct {
 		i int
 		s string
 		e error
 	})
-	for i, et := range entriesCopy {
-		go func(i int, entry Entry) {
+	for key, entry := range entriesCopy {
+		go func(key int, entry Entry) {
 			if len(entry.Date) != 10 {
-				co <- struct {
+				channel <- struct {
 					i int
 					s string
 					e error
@@ -68,25 +68,20 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 			}
 			d1, d2, d3, d4, d5 := entry.Date[0:4], entry.Date[4], entry.Date[5:7], entry.Date[7], entry.Date[8:10]
 			if d2 != '-' {
-				co <- struct {
+				channel <- struct {
 					i int
 					s string
 					e error
 				}{e: errors.New("")}
 			}
 			if d4 != '-' {
-				co <- struct {
+				channel <- struct {
 					i int
 					s string
 					e error
 				}{e: errors.New("")}
 			}
-			de := entry.Description
-			if len(de) > 25 {
-				de = de[:22] + "..."
-			} else {
-				de = de + strings.Repeat(" ", 25-len(de))
-			}
+			entryDescription := formetEntryDescription(entry.Description)
 			var d string
 			if locale == "nl-NL" {
 				d = d5 + "-" + d3 + "-" + d1
@@ -106,7 +101,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 				} else if currency == "USD" {
 					a += "$"
 				} else {
-					co <- struct {
+					channel <- struct {
 						i int
 						s string
 						e error
@@ -148,7 +143,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 				} else if currency == "USD" {
 					a += "$"
 				} else {
-					co <- struct {
+					channel <- struct {
 						i int
 						s string
 						e error
@@ -182,7 +177,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 					a += " "
 				}
 			} else {
-				co <- struct {
+				channel <- struct {
 					i int
 					s string
 					e error
@@ -192,17 +187,17 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 			for range a {
 				al++
 			}
-			co <- struct {
+			channel <- struct {
 				i int
 				s string
 				e error
-			}{i: i, s: d + strings.Repeat(" ", 10-len(d)) + " | " + de + " | " +
+			}{i: key, s: d + strings.Repeat(" ", 10-len(d)) + " | " + entryDescription + " | " +
 				strings.Repeat(" ", 13-al) + a + "\n"}
-		}(i, et)
+		}(key, entry)
 	}
 	ss := make([]string, len(entriesCopy))
 	for range entriesCopy {
-		v := <-co
+		v := <-channel
 		if v.e != nil {
 			return "", v.e
 		}
@@ -227,5 +222,13 @@ func ledgerHeader(locale string) (string, error) {
 
 	default:
 		return "", errors.New("")
+	}
+}
+
+func formetEntryDescription(description string) string {
+	if len(description) > 25 {
+		return description[:22] + "..."
+	} else {
+		return description + strings.Repeat(" ", 25-len(description))
 	}
 }
