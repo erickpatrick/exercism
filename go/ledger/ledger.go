@@ -51,6 +51,12 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 		return "", headerError
 	}
 
+	channelError := struct {
+		i int
+		s string
+		e error
+	}{e: errors.New("")}
+
 	// Parallelism, always a great idea
 	channel := make(chan struct {
 		i int
@@ -60,26 +66,14 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 	for key, entry := range entriesCopy {
 		go func(key int, entry Entry) {
 			if len(entry.Date) != 10 {
-				channel <- struct {
-					i int
-					s string
-					e error
-				}{e: errors.New("")}
+				channel <- channelError
 			}
 			d1, d2, d3, d4, d5 := entry.Date[0:4], entry.Date[4], entry.Date[5:7], entry.Date[7], entry.Date[8:10]
 			if d2 != '-' {
-				channel <- struct {
-					i int
-					s string
-					e error
-				}{e: errors.New("")}
+				channel <- channelError
 			}
 			if d4 != '-' {
-				channel <- struct {
-					i int
-					s string
-					e error
-				}{e: errors.New("")}
+				channel <- channelError
 			}
 			entryDescription := formetEntryDescription(entry.Description)
 			var d string
