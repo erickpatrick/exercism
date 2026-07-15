@@ -2,6 +2,7 @@ package ledger
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -14,9 +15,10 @@ type Entry struct {
 
 func FormatLedger(currency string, locale string, entries []Entry) (string, error) {
 	var entriesCopy []Entry
-	for _, e := range entries {
-		entriesCopy = append(entriesCopy, e)
-	}
+
+	// simplifies copy of entries
+	entriesCopy = append(entriesCopy, entries...)
+
 	if len(entries) == 0 {
 		if _, err := FormatLedger(currency, "en-US", []Entry{{Date: "2014-01-01", Description: "", Change: 0}}); err != nil {
 			return "", err
@@ -42,24 +44,13 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 		es = es[1:]
 	}
 
-	var s string
-	if locale == "nl-NL" {
-		s = "Datum" +
-			strings.Repeat(" ", 10-len("Datum")) +
-			" | " +
-			"Omschrijving" +
-			strings.Repeat(" ", 25-len("Omschrijving")) +
-			" | " + "Verandering" + strings.Repeat(" ", 13-len("Verandering")) + "\n"
-	} else if locale == "en-US" {
-		s = "Date" +
-			strings.Repeat(" ", 10-len("Date")) +
-			" | " +
-			"Description" +
-			strings.Repeat(" ", 25-len("Description")) +
-			" | " + "Change" + strings.Repeat(" ", 13-len("Change")) + "\n"
-	} else {
-		return "", errors.New("")
+	// ledger header creation
+	// renames `s` into header
+	header, headerError := ledgerHeader(locale)
+	if headerError != nil {
+		return "", headerError
 	}
+
 	// Parallelism, always a great idea
 	co := make(chan struct {
 		i int
@@ -218,7 +209,23 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 		ss[v.i] = v.s
 	}
 	for i := range len(entriesCopy) {
-		s += ss[i]
+		header += ss[i]
 	}
-	return s, nil
+	return header, nil
+}
+
+func ledgerHeader(locale string) (string, error) {
+	switch locale {
+	case "nl-NL":
+		header := fmt.Sprintf("Datum%6s| Omschrijving%14s| Verandering%2s\n", "", "", "")
+		return header, nil
+
+	case "en-US":
+		header := fmt.Sprintf("Date%7s| Description%15s| Change%7s\n", "", "", "")
+
+		return header, nil
+
+	default:
+		return "", errors.New("")
+	}
 }
