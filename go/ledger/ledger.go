@@ -51,28 +51,18 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 		return "", headerError
 	}
 
-	channelError := struct {
-		i int
-		s string
-		e error
-	}{e: errors.New("")}
+	// creates channelError as it is always the same
+	channelError := buildChannelPayload(ChannelPayload{e: errors.New("")})
 
 	// Parallelism, always a great idea
-	channel := make(chan struct {
-		i int
-		s string
-		e error
-	})
+	channel := make(chan ChannelPayload)
 	for key, entry := range entriesCopy {
 		go func(key int, entry Entry) {
 			if len(entry.Date) != 10 {
 				channel <- channelError
 			}
 			d1, d2, d3, d4, d5 := entry.Date[0:4], entry.Date[4], entry.Date[5:7], entry.Date[7], entry.Date[8:10]
-			if d2 != '-' {
-				channel <- channelError
-			}
-			if d4 != '-' {
+			if d2 != '-' || d4 != '-' {
 				channel <- channelError
 			}
 			entryDescription := formetEntryDescription(entry.Description)
@@ -137,11 +127,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 				} else if currency == "USD" {
 					a += "$"
 				} else {
-					channel <- struct {
-						i int
-						s string
-						e error
-					}{e: errors.New("")}
+					channel <- channelError
 				}
 				centsStr := strconv.Itoa(cents)
 				switch len(centsStr) {
@@ -171,21 +157,13 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 					a += " "
 				}
 			} else {
-				channel <- struct {
-					i int
-					s string
-					e error
-				}{e: errors.New("")}
+				channel <- channelError
 			}
 			var al int
 			for range a {
 				al++
 			}
-			channel <- struct {
-				i int
-				s string
-				e error
-			}{i: key, s: d + strings.Repeat(" ", 10-len(d)) + " | " + entryDescription + " | " +
+			channel <- ChannelPayload{i: key, s: d + strings.Repeat(" ", 10-len(d)) + " | " + entryDescription + " | " +
 				strings.Repeat(" ", 13-al) + a + "\n"}
 		}(key, entry)
 	}
@@ -224,5 +202,19 @@ func formetEntryDescription(description string) string {
 		return description[:22] + "..."
 	} else {
 		return description + strings.Repeat(" ", 25-len(description))
+	}
+}
+
+type ChannelPayload struct {
+	i int
+	s string
+	e error
+}
+
+func buildChannelPayload(value ChannelPayload) ChannelPayload {
+	return ChannelPayload{
+		i: value.i,
+		s: value.s,
+		e: value.e,
 	}
 }
