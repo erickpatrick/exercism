@@ -55,7 +55,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 	}
 
 	// creates channelError as it is always the same
-	channelError := buildChannelPayload(ChannelPayload{e: errors.New("")})
+	channelError := ChannelPayload{e: errors.New("")}
 
 	// Parallelism, always a great idea
 	// uses ChannelPayload type to avoid passing wrongly built payloads
@@ -162,8 +162,10 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 			for range a {
 				al++
 			}
-			channel <- ChannelPayload{i: key, s: d + strings.Repeat(" ", 10-len(d)) + " | " + entryDescription + " | " +
-				strings.Repeat(" ", 13-al) + a + "\n"}
+			channel <- ChannelPayload{
+				i: key,
+				s: d + strings.Repeat(" ", 10-len(d)) + " | " + entryDescription + " | " + strings.Repeat(" ", 13-al) + a + "\n",
+			}
 		}(key, entry)
 	}
 	ss := make([]string, len(entriesCopy))
@@ -208,12 +210,4 @@ type ChannelPayload struct {
 	i int
 	s string
 	e error
-}
-
-func buildChannelPayload(value ChannelPayload) ChannelPayload {
-	return ChannelPayload{
-		i: value.i,
-		s: value.s,
-		e: value.e,
-	}
 }
