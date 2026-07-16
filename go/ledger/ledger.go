@@ -27,18 +27,16 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 	m1 := map[bool]int{true: 0, false: 1}
 	m2 := map[bool]int{true: -1, false: 1}
 	es := entriesCopy
+
+	// removes extraneous loop which would cause O(n^2)
 	for len(es) > 1 {
 		first, rest := es[0], es[1:]
-		success := false
-		for !success {
-			success = true
-			for i, e := range rest {
-				if (m1[e.Date == first.Date]*m2[e.Date < first.Date]*4 +
-					m1[e.Description == first.Description]*m2[e.Description < first.Description]*2 +
-					m1[e.Change == first.Change]*m2[e.Change < first.Change]*1) < 0 {
-					es[0], es[i+1] = es[i+1], es[0]
-					success = false
-				}
+		for i, e := range rest {
+			if (m1[e.Date == first.Date]*m2[e.Date < first.Date]*4 +
+				m1[e.Description == first.Description]*m2[e.Description < first.Description]*2 +
+				m1[e.Change == first.Change]*m2[e.Change < first.Change]*1) < 0 {
+				es[0], es[i+1] = es[i+1], es[0]
+				break
 			}
 		}
 		es = es[1:]
@@ -55,6 +53,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 	channelError := buildChannelPayload(ChannelPayload{e: errors.New("")})
 
 	// Parallelism, always a great idea
+	// uses ChannelPayload type to avoid passing wrongly built payloads
 	channel := make(chan ChannelPayload)
 	for key, entry := range entriesCopy {
 		go func(key int, entry Entry) {
