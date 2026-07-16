@@ -16,20 +16,20 @@ type Entry struct {
 func sortEntries(entries []Entry) []Entry {
 	m1 := map[bool]int{true: 0, false: 1}
 	m2 := map[bool]int{true: -1, false: 1}
-	es := entries
+	entriesCopy := entries
 
 	// removes extraneous loop which would cause O(n^2)
-	for len(es) > 1 {
-		first, rest := es[0], es[1:]
+	for len(entriesCopy) > 1 {
+		first, rest := entriesCopy[0], entriesCopy[1:]
 		for i, e := range rest {
 			if (m1[e.Date == first.Date]*m2[e.Date < first.Date]*4 +
 				m1[e.Description == first.Description]*m2[e.Description < first.Description]*2 +
 				m1[e.Change == first.Change]*m2[e.Change < first.Change]*1) < 0 {
-				es[0], es[i+1] = es[i+1], es[0]
+				entriesCopy[0], entriesCopy[i+1] = entriesCopy[i+1], entriesCopy[0]
 				break
 			}
 		}
-		es = es[1:]
+		entriesCopy = entriesCopy[1:]
 	}
 
 	return entries
@@ -45,9 +45,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 	}
 
 	// simplifies copy of entries
-	entriesCopy = append(entriesCopy, entries...)
-
-	entriesCopy = sortEntries(entriesCopy)
+	entriesCopy = sortEntries(append(entriesCopy, entries...))
 
 	// ledger header creation
 	// renames `s` into header
