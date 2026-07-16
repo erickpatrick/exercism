@@ -68,10 +68,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 	channel := make(chan ChannelPayload)
 	for key, entry := range entriesCopy {
 		go func(key int, entry Entry) {
-			if len(entry.Date) != 10 {
-				channel <- channelError
-			}
-			if isValidDateSeparator(entry.Date) != nil {
+			if len(entry.Date) != 10 || isValidDateSeparator(entry.Date) != nil {
 				channel <- channelError
 			}
 			entryDescription := formatEntryDescription(entry.Description)
