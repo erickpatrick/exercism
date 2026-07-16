@@ -71,8 +71,10 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 			if len(entry.Date) != 10 || isValidDateSeparator(entry.Date) != nil {
 				channel <- channelError
 			}
+
 			entryDescription := formatEntryDescription(entry.Description)
 			formattedDate := formatDate(entry.Date, locale)
+
 			negative := false
 			cents := entry.Change
 			if cents < 0 {
@@ -81,13 +83,10 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 			}
 			var a string
 			if locale == "nl-NL" {
-				if currency == "EUR" {
-					a += "€"
-				} else if currency == "USD" {
-					a += "$"
-				} else {
+				if !isValidCurrency(currency) {
 					channel <- ChannelPayload{e: errors.New("")}
 				}
+				a += currencySymbol(currency)
 				a += " "
 				centsStr := strconv.Itoa(cents)
 				switch len(centsStr) {
@@ -208,6 +207,26 @@ func formatDate(date string, locale string) string {
 		return d2 + "/" + d3 + "/" + d1
 	default:
 		return date
+	}
+}
+
+func isValidCurrency(currency string) bool {
+	switch currency {
+	case "EUR", "USD":
+		return true
+	default:
+		return false
+	}
+}
+
+func currencySymbol(currency string) string {
+	switch currency {
+	case "EUR":
+		return "€"
+	case "USD":
+		return "$"
+	default:
+		return ""
 	}
 }
 
