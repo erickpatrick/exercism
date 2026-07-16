@@ -13,6 +13,12 @@ type Entry struct {
 	Change      int // in cents
 }
 
+type ChannelPayload struct {
+	i int
+	s string
+	e error
+}
+
 func sortEntries(entries []Entry) []Entry {
 	m1 := map[bool]int{true: 0, false: 1}
 	m2 := map[bool]int{true: -1, false: 1}
@@ -65,17 +71,12 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 			if len(entry.Date) != 10 {
 				channel <- channelError
 			}
-			d1, d2, d3, d4, d5 := entry.Date[0:4], entry.Date[4], entry.Date[5:7], entry.Date[7], entry.Date[8:10]
+			d2, d4 := entry.Date[4], entry.Date[7]
 			if d2 != '-' || d4 != '-' {
 				channel <- channelError
 			}
-			entryDescription := formetEntryDescription(entry.Description)
-			var d string
-			if locale == "nl-NL" {
-				d = d5 + "-" + d3 + "-" + d1
-			} else if locale == "en-US" {
-				d = d3 + "/" + d5 + "/" + d1
-			}
+			entryDescription := formatEntryDescription(entry.Description)
+			formattedDate := formatDate(entry.Date, locale)
 			negative := false
 			cents := entry.Change
 			if cents < 0 {
@@ -89,11 +90,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 				} else if currency == "USD" {
 					a += "$"
 				} else {
-					channel <- struct {
-						i int
-						s string
-						e error
-					}{e: errors.New("")}
+					channel <- ChannelPayload{e: errors.New("")}
 				}
 				a += " "
 				centsStr := strconv.Itoa(cents)
@@ -164,7 +161,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 			}
 			channel <- ChannelPayload{
 				i: key,
-				s: d + strings.Repeat(" ", 10-len(d)) + " | " + entryDescription + " | " + strings.Repeat(" ", 13-al) + a + "\n",
+				s: formattedDate + strings.Repeat(" ", 10-len(formattedDate)) + " | " + entryDescription + " | " + strings.Repeat(" ", 13-al) + a + "\n",
 			}
 		}(key, entry)
 	}
@@ -198,7 +195,19 @@ func ledgerHeader(locale string) (string, error) {
 	}
 }
 
-func formetEntryDescription(description string) string {
+func formatDate(date string, locale string) string {
+	d1, d2, d3 := date[0:4], date[5:7], date[8:10]
+	switch locale {
+	case "nl-NL":
+		return d3 + "-" + d2 + "-" + d1
+	case "en-US":
+		return d2 + "/" + d3 + "/" + d1
+	default:
+		return date
+	}
+}
+
+func formatEntryDescription(description string) string {
 	if len(description) > 25 {
 		return description[:22] + "..."
 	} else {
@@ -206,8 +215,13 @@ func formetEntryDescription(description string) string {
 	}
 }
 
-type ChannelPayload struct {
-	i int
-	s string
-	e error
+func formatNegativeNumberFor(locale string, number string) string {
+	switch locale {
+	case "nl-NL":
+		return "-" + number
+	case "en-US":
+		return "(" + number + ")"
+	default:
+		return "-" + number
+	}
 }
