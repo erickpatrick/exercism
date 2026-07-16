@@ -126,11 +126,12 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 				if negative {
 					a += "("
 				}
-				if currency == "EUR" {
+				switch currency {
+				case "EUR":
 					a += "€"
-				} else if currency == "USD" {
+				case "USD":
 					a += "$"
-				} else {
+				default:
 					channel <- channelError
 				}
 				centsStr := strconv.Itoa(cents)
