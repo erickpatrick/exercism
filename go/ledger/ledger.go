@@ -81,20 +81,15 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 				cents = cents * -1
 				negative = true
 			}
-			var a string
+
+			var formattedCurrency string
 			if locale == "nl-NL" {
 				if !isValidCurrency(currency) {
 					channel <- ChannelPayload{e: errors.New("")}
 				}
-				a += currencySymbol(currency)
-				a += " "
-				centsStr := strconv.Itoa(cents)
-				switch len(centsStr) {
-				case 1:
-					centsStr = "00" + centsStr
-				case 2:
-					centsStr = "0" + centsStr
-				}
+				formattedCurrency += currencySymbol(currency)
+				formattedCurrency += " "
+				centsStr := fmt.Sprintf("%03s", strconv.Itoa(cents))
 				rest := centsStr[:len(centsStr)-2]
 				var parts []string
 				for len(rest) > 3 {
@@ -105,27 +100,23 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 					parts = append(parts, rest)
 				}
 				if negative {
-					a += "-"
+					formattedCurrency += "-"
 				}
 				for i := len(parts) - 1; i >= 0; i-- {
-					a += parts[i] + "."
+					formattedCurrency += parts[i] + "."
 				}
-				a = a[:len(a)-1]
-				a += ","
-				a += centsStr[len(centsStr)-2:]
-				a += " "
+				formattedCurrency = formattedCurrency[:len(formattedCurrency)-1]
+				formattedCurrency += ","
+				formattedCurrency += centsStr[len(centsStr)-2:]
+				formattedCurrency += " "
 			} else if locale == "en-US" {
 				if negative {
-					a += "("
+					formattedCurrency += "("
 				}
-				switch currency {
-				case "EUR":
-					a += "€"
-				case "USD":
-					a += "$"
-				default:
-					channel <- channelError
+				if !isValidCurrency(currency) {
+					channel <- ChannelPayload{e: errors.New("")}
 				}
+				formattedCurrency += currencySymbol(currency)
 				centsStr := fmt.Sprintf("%03s", strconv.Itoa(cents))
 				rest := centsStr[:len(centsStr)-2]
 				var parts []string
@@ -137,26 +128,26 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 					parts = append(parts, rest)
 				}
 				for i := len(parts) - 1; i >= 0; i-- {
-					a += parts[i] + ","
+					formattedCurrency += parts[i] + ","
 				}
-				a = a[:len(a)-1]
-				a += "."
-				a += centsStr[len(centsStr)-2:]
+				formattedCurrency = formattedCurrency[:len(formattedCurrency)-1]
+				formattedCurrency += "."
+				formattedCurrency += centsStr[len(centsStr)-2:]
 				if negative {
-					a += ")"
+					formattedCurrency += ")"
 				} else {
-					a += " "
+					formattedCurrency += " "
 				}
 			} else {
 				channel <- channelError
 			}
 			var al int
-			for range a {
+			for range formattedCurrency {
 				al++
 			}
 			channel <- ChannelPayload{
 				i: key,
-				s: formattedDate + strings.Repeat(" ", 10-len(formattedDate)) + " | " + entryDescription + " | " + strings.Repeat(" ", 13-al) + a + "\n",
+				s: formattedDate + strings.Repeat(" ", 10-len(formattedDate)) + " | " + entryDescription + " | " + strings.Repeat(" ", 13-al) + formattedCurrency + "\n",
 			}
 		}(key, entry)
 	}
