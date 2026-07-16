@@ -13,20 +13,10 @@ type Entry struct {
 	Change      int // in cents
 }
 
-func FormatLedger(currency string, locale string, entries []Entry) (string, error) {
-	var entriesCopy []Entry
-
-	// simplifies copy of entries
-	entriesCopy = append(entriesCopy, entries...)
-
-	if len(entries) == 0 {
-		if _, err := FormatLedger(currency, "en-US", []Entry{{Date: "2014-01-01", Description: "", Change: 0}}); err != nil {
-			return "", err
-		}
-	}
+func sortEntries(entries []Entry) []Entry {
 	m1 := map[bool]int{true: 0, false: 1}
 	m2 := map[bool]int{true: -1, false: 1}
-	es := entriesCopy
+	es := entries
 
 	// removes extraneous loop which would cause O(n^2)
 	for len(es) > 1 {
@@ -41,6 +31,23 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 		}
 		es = es[1:]
 	}
+
+	return entries
+}
+
+func FormatLedger(currency string, locale string, entries []Entry) (string, error) {
+	var entriesCopy []Entry
+
+	// simplifies copy of entries
+	entriesCopy = append(entriesCopy, entries...)
+
+	if len(entries) == 0 {
+		if _, err := FormatLedger(currency, "en-US", []Entry{{Date: "2014-01-01", Description: "", Change: 0}}); err != nil {
+			return "", err
+		}
+	}
+
+	entriesCopy = sortEntries(entriesCopy)
 
 	// ledger header creation
 	// renames `s` into header
