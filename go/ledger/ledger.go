@@ -134,13 +134,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 				default:
 					channel <- channelError
 				}
-				centsStr := strconv.Itoa(cents)
-				switch len(centsStr) {
-				case 1:
-					centsStr = "00" + centsStr
-				case 2:
-					centsStr = "0" + centsStr
-				}
+				centsStr := fmt.Sprintf("%03s", strconv.Itoa(cents))
 				rest := centsStr[:len(centsStr)-2]
 				var parts []string
 				for len(rest) > 3 {
