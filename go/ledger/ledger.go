@@ -38,14 +38,14 @@ func sortEntries(entries []Entry) []Entry {
 func FormatLedger(currency string, locale string, entries []Entry) (string, error) {
 	var entriesCopy []Entry
 
-	// simplifies copy of entries
-	entriesCopy = append(entriesCopy, entries...)
-
 	if len(entries) == 0 {
 		if _, err := FormatLedger(currency, "en-US", []Entry{{Date: "2014-01-01", Description: "", Change: 0}}); err != nil {
 			return "", err
 		}
 	}
+
+	// simplifies copy of entries
+	entriesCopy = append(entriesCopy, entries...)
 
 	entriesCopy = sortEntries(entriesCopy)
 
