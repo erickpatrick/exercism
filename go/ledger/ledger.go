@@ -71,8 +71,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 			if len(entry.Date) != 10 {
 				channel <- channelError
 			}
-			d2, d4 := entry.Date[4], entry.Date[7]
-			if d2 != '-' || d4 != '-' {
+			if isValidDateSeparator(entry.Date) != nil {
 				channel <- channelError
 			}
 			entryDescription := formatEntryDescription(entry.Description)
@@ -193,6 +192,14 @@ func ledgerHeader(locale string) (string, error) {
 	default:
 		return "", errors.New("")
 	}
+}
+
+func isValidDateSeparator(date string) error {
+	if date[4] != '-' || date[7] != '-' {
+		return errors.New("invalid date separator")
+	}
+
+	return nil
 }
 
 func formatDate(date string, locale string) string {
