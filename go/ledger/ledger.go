@@ -77,20 +77,20 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 			entryDate := formatDate(entry.Date, locale)
 
 			negative := false
-			cents := entry.Change
-			if cents < 0 {
-				cents = cents * -1
+			entryChange := entry.Change
+			if entryChange < 0 {
+				entryChange = entryChange * -1
 				negative = true
 			}
 
-			var formattedCurrency string
+			var entryCurrency string
 			if locale == "nl-NL" {
 				if !isValidCurrency(currency) {
 					channelMessages <- channelErrorMessage
 				}
-				formattedCurrency += currencySymbol(currency)
-				formattedCurrency += " "
-				centsStr := fmt.Sprintf("%03s", strconv.Itoa(cents))
+				entryCurrency += currencySymbol(currency)
+				entryCurrency += " "
+				centsStr := fmt.Sprintf("%03s", strconv.Itoa(entryChange))
 				rest := centsStr[:len(centsStr)-2]
 				var parts []string
 				for len(rest) > 3 {
@@ -101,24 +101,24 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 					parts = append(parts, rest)
 				}
 				if negative {
-					formattedCurrency += "-"
+					entryCurrency += "-"
 				}
 				for i := len(parts) - 1; i >= 0; i-- {
-					formattedCurrency += parts[i] + "."
+					entryCurrency += parts[i] + "."
 				}
-				formattedCurrency = formattedCurrency[:len(formattedCurrency)-1]
-				formattedCurrency += ","
-				formattedCurrency += centsStr[len(centsStr)-2:]
-				formattedCurrency += " "
+				entryCurrency = entryCurrency[:len(entryCurrency)-1]
+				entryCurrency += ","
+				entryCurrency += centsStr[len(centsStr)-2:]
+				entryCurrency += " "
 			} else if locale == "en-US" {
 				if negative {
-					formattedCurrency += "("
+					entryCurrency += "("
 				}
 				if !isValidCurrency(currency) {
 					channelMessages <- channelErrorMessage
 				}
-				formattedCurrency += currencySymbol(currency)
-				centsStr := fmt.Sprintf("%03s", strconv.Itoa(cents))
+				entryCurrency += currencySymbol(currency)
+				centsStr := fmt.Sprintf("%03s", strconv.Itoa(entryChange))
 				rest := centsStr[:len(centsStr)-2]
 				var parts []string
 				for len(rest) > 3 {
@@ -129,26 +129,26 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 					parts = append(parts, rest)
 				}
 				for i := len(parts) - 1; i >= 0; i-- {
-					formattedCurrency += parts[i] + ","
+					entryCurrency += parts[i] + ","
 				}
-				formattedCurrency = formattedCurrency[:len(formattedCurrency)-1]
-				formattedCurrency += "."
-				formattedCurrency += centsStr[len(centsStr)-2:]
+				entryCurrency = entryCurrency[:len(entryCurrency)-1]
+				entryCurrency += "."
+				entryCurrency += centsStr[len(centsStr)-2:]
 				if negative {
-					formattedCurrency += ")"
+					entryCurrency += ")"
 				} else {
-					formattedCurrency += " "
+					entryCurrency += " "
 				}
 			} else {
 				channelMessages <- channelErrorMessage
 			}
 			var al int
-			for range formattedCurrency {
+			for range entryCurrency {
 				al++
 			}
 			channelMessages <- ChannelMessage{
 				i: key,
-				s: entryDate + strings.Repeat(" ", 10-len(entryDate)) + " | " + entryDescription + " | " + strings.Repeat(" ", 13-al) + formattedCurrency + "\n",
+				s: entryDate + strings.Repeat(" ", 10-len(entryDate)) + " | " + entryDescription + " | " + strings.Repeat(" ", 13-al) + entryCurrency + "\n",
 			}
 		}(key, entry)
 	}
