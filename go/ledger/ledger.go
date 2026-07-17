@@ -95,6 +95,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 			}
 		}(key, entry)
 	}
+
 	ss := make([]string, len(entriesCopy))
 	for range entriesCopy {
 		message := <-channelMessages
@@ -103,9 +104,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 		}
 		ss[message.i] = message.s
 	}
-	for i := range len(entriesCopy) {
-		header += ss[i]
-	}
+	header += strings.Join(ss, "")
 	return header, nil
 }
 
