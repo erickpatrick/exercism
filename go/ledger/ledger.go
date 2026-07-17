@@ -13,7 +13,7 @@ type Entry struct {
 	Change      int // in cents
 }
 
-type ChannelPayload struct {
+type ChannelMessage struct {
 	i int
 	s string
 	e error
@@ -60,16 +60,16 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 		return "", headerError
 	}
 
-	// creates channelError as it is always the same
-	channelError := ChannelPayload{e: errors.New("")}
+	// creates channelErrorMessage as it is always the same
+	channelErrorMessage := ChannelMessage{e: errors.New("")}
 
 	// Parallelism, always a great idea
 	// uses ChannelPayload type to avoid passing wrongly built payloads
-	channel := make(chan ChannelPayload)
+	channelMessages := make(chan ChannelMessage)
 	for key, entry := range entriesCopy {
 		go func(key int, entry Entry) {
 			if len(entry.Date) != 10 || isValidDateSeparator(entry.Date) != nil {
-				channel <- channelError
+				channelMessages <- channelErrorMessage
 			}
 
 			entryDescription := formatEntryDescription(entry.Description)
@@ -85,7 +85,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 			var formattedCurrency string
 			if locale == "nl-NL" {
 				if !isValidCurrency(currency) {
-					channel <- ChannelPayload{e: errors.New("")}
+					channelMessages <- channelErrorMessage
 				}
 				formattedCurrency += currencySymbol(currency)
 				formattedCurrency += " "
@@ -114,7 +114,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 					formattedCurrency += "("
 				}
 				if !isValidCurrency(currency) {
-					channel <- ChannelPayload{e: errors.New("")}
+					channelMessages <- channelErrorMessage
 				}
 				formattedCurrency += currencySymbol(currency)
 				centsStr := fmt.Sprintf("%03s", strconv.Itoa(cents))
@@ -139,13 +139,13 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 					formattedCurrency += " "
 				}
 			} else {
-				channel <- channelError
+				channelMessages <- channelErrorMessage
 			}
 			var al int
 			for range formattedCurrency {
 				al++
 			}
-			channel <- ChannelPayload{
+			channelMessages <- ChannelMessage{
 				i: key,
 				s: formattedDate + strings.Repeat(" ", 10-len(formattedDate)) + " | " + entryDescription + " | " + strings.Repeat(" ", 13-al) + formattedCurrency + "\n",
 			}
@@ -153,7 +153,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 	}
 	ss := make([]string, len(entriesCopy))
 	for range entriesCopy {
-		v := <-channel
+		v := <-channelMessages
 		if v.e != nil {
 			return "", v.e
 		}
