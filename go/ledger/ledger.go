@@ -83,13 +83,14 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 				negative = true
 			}
 
-			var entryCurrency string
+			if !isValidCurrency(currency) {
+				channelMessages <- channelErrorMessage
+			}
+
+			var entryChangeFormatted string
 			if locale == "nl-NL" {
-				if !isValidCurrency(currency) {
-					channelMessages <- channelErrorMessage
-				}
-				entryCurrency += currencySymbol(currency)
-				entryCurrency += " "
+				entryChangeFormatted += currencySymbol(currency)
+				entryChangeFormatted += " "
 				centsStr := fmt.Sprintf("%03s", strconv.Itoa(entryChange))
 				rest := centsStr[:len(centsStr)-2]
 				var parts []string
@@ -101,23 +102,20 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 					parts = append(parts, rest)
 				}
 				if negative {
-					entryCurrency += "-"
+					entryChangeFormatted += "-"
 				}
 				for i := len(parts) - 1; i >= 0; i-- {
-					entryCurrency += parts[i] + "."
+					entryChangeFormatted += parts[i] + "."
 				}
-				entryCurrency = entryCurrency[:len(entryCurrency)-1]
-				entryCurrency += ","
-				entryCurrency += centsStr[len(centsStr)-2:]
-				entryCurrency += " "
+				entryChangeFormatted = entryChangeFormatted[:len(entryChangeFormatted)-1]
+				entryChangeFormatted += ","
+				entryChangeFormatted += centsStr[len(centsStr)-2:]
+				entryChangeFormatted += " "
 			} else if locale == "en-US" {
 				if negative {
-					entryCurrency += "("
+					entryChangeFormatted += "("
 				}
-				if !isValidCurrency(currency) {
-					channelMessages <- channelErrorMessage
-				}
-				entryCurrency += currencySymbol(currency)
+				entryChangeFormatted += currencySymbol(currency)
 				centsStr := fmt.Sprintf("%03s", strconv.Itoa(entryChange))
 				rest := centsStr[:len(centsStr)-2]
 				var parts []string
@@ -129,26 +127,26 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 					parts = append(parts, rest)
 				}
 				for i := len(parts) - 1; i >= 0; i-- {
-					entryCurrency += parts[i] + ","
+					entryChangeFormatted += parts[i] + ","
 				}
-				entryCurrency = entryCurrency[:len(entryCurrency)-1]
-				entryCurrency += "."
-				entryCurrency += centsStr[len(centsStr)-2:]
+				entryChangeFormatted = entryChangeFormatted[:len(entryChangeFormatted)-1]
+				entryChangeFormatted += "."
+				entryChangeFormatted += centsStr[len(centsStr)-2:]
 				if negative {
-					entryCurrency += ")"
+					entryChangeFormatted += ")"
 				} else {
-					entryCurrency += " "
+					entryChangeFormatted += " "
 				}
 			} else {
 				channelMessages <- channelErrorMessage
 			}
 			var al int
-			for range entryCurrency {
+			for range entryChangeFormatted {
 				al++
 			}
 			channelMessages <- ChannelMessage{
 				i: key,
-				s: entryDate + strings.Repeat(" ", 10-len(entryDate)) + " | " + entryDescription + " | " + strings.Repeat(" ", 13-al) + entryCurrency + "\n",
+				s: entryDate + strings.Repeat(" ", 10-len(entryDate)) + " | " + entryDescription + " | " + strings.Repeat(" ", 13-al) + entryChangeFormatted + "\n",
 			}
 		}(key, entry)
 	}
@@ -220,6 +218,14 @@ func currencySymbol(currency string) string {
 	default:
 		return ""
 	}
+}
+
+func formatEntryChange(change string, currency string, locale string) string {
+	// gets currency symbol
+	// left pads cents with 0s for a total of 3 places
+	// adds decimal markers and thousand separators according to locale
+	// adds negative marker if negative value for change
+	return ""
 }
 
 func formatEntryDescription(description string) string {
