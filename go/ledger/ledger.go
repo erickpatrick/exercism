@@ -66,6 +66,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 	// Parallelism, always a great idea
 	// uses ChannelPayload type to avoid passing wrongly built payloads
 	channelMessages := make(chan ChannelMessage)
+
 	for key, entry := range entriesCopy {
 		go func(key int, entry Entry) {
 			if len(entry.Date) != 10 || isValidDateSeparator(entry.Date) != nil {
@@ -73,7 +74,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 			}
 
 			entryDescription := formatEntryDescription(entry.Description)
-			formattedDate := formatDate(entry.Date, locale)
+			entryDate := formatDate(entry.Date, locale)
 
 			negative := false
 			cents := entry.Change
@@ -147,7 +148,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 			}
 			channelMessages <- ChannelMessage{
 				i: key,
-				s: formattedDate + strings.Repeat(" ", 10-len(formattedDate)) + " | " + entryDescription + " | " + strings.Repeat(" ", 13-al) + formattedCurrency + "\n",
+				s: entryDate + strings.Repeat(" ", 10-len(entryDate)) + " | " + entryDescription + " | " + strings.Repeat(" ", 13-al) + formattedCurrency + "\n",
 			}
 		}(key, entry)
 	}
