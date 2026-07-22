@@ -5,20 +5,17 @@ func SumMultiples(limit int, divisors ...int) int {
 	// values which are divisible by either number in `divisors` up to `limit`
 
 	points := map[int]int{}
+	result := 0
 	for i := range limit {
 		for _, divisor := range divisors {
 			if divisor == 0 {
 				continue
 			}
-			if i%divisor == 0 {
+			if i%divisor == 0 && points[i] == 0 {
 				points[i] = i
+				result += i
 			}
 		}
-	}
-
-	result := 0
-	for _, point := range points {
-		result += point
 	}
 
 	return result
