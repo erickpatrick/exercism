@@ -1,6 +1,8 @@
 package linkedlist
 
-import "errors"
+import (
+	"errors"
+)
 
 // Define List and Node types here.
 // Note: The tests expect Node type to include an exported field with name Value to pass.
@@ -56,7 +58,6 @@ func (l *List) Unshift(v any) {
 }
 
 func (l *List) Push(v any) {
-	// fmt.Println(l, v)
 	if l.first == nil && l.last == nil {
 		nl := NewList(v)
 		*l = *nl
@@ -67,8 +68,17 @@ func (l *List) Push(v any) {
 	}
 }
 
-func (l *List) Shift() (any, error) {
-	panic("Please implement the Shift function")
+func (l *List) Shift() (value any, err error) {
+	if l.first == nil {
+		err := errors.New("")
+		return value, err
+	}
+
+	value = l.first.Value
+	next := l.first.next
+	l.first = next
+
+	return value, err
 }
 
 func (l *List) Pop() (value any, err error) {
