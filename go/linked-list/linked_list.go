@@ -1,8 +1,6 @@
 package linkedlist
 
-import (
-	"errors"
-)
+import "errors"
 
 // Define List and Node types here.
 // Note: The tests expect Node type to include an exported field with name Value to pass.
@@ -23,11 +21,12 @@ func NewList(elements ...any) *List {
 	var prevNode *Node
 
 	for i, element := range elements {
-		newNode := Node{Value: element, previous: prevNode, next: nil}
+		newNode := Node{Value: element, previous: prevNode}
 		prevNode = &newNode
 
 		if i == 0 {
 			newList.first = &newNode
+			newList.last = &newNode
 		}
 
 		if i > 0 {
@@ -52,7 +51,7 @@ func (n *Node) Prev() *Node {
 }
 
 func (l *List) Unshift(v any) {
-	newNode := Node{Value: v, previous: nil, next: l.first}
+	newNode := Node{Value: v, next: l.first}
 	l.first = &newNode
 }
 
@@ -62,7 +61,7 @@ func (l *List) Push(v any) {
 		nl := NewList(v)
 		*l = *nl
 	} else {
-		newNode := Node{Value: v, previous: l.last, next: nil}
+		newNode := Node{Value: v, previous: l.last}
 		l.last.next = &newNode
 		l.last = &newNode
 	}
@@ -72,17 +71,23 @@ func (l *List) Shift() (any, error) {
 	panic("Please implement the Shift function")
 }
 
-func (l *List) Pop() (any, error) {
-	if l.last == nil {
-		return -1, errors.New("")
+func (l *List) Pop() (value any, err error) {
+	if l.first == nil {
+		err := errors.New("")
+		return value, err
 	}
 
-	value := l.last.Value
-	newNode := Node{Value: l.last.previous.Value, next: nil, previous: nil}
-	l.last = &newNode
-	// fmt.Println(l.last, value)
+	if *l.first == *l.last {
+		value = l.first.Value
+		l.first = nil
+		l.last = nil
 
-	return value, nil
+		return value, err
+	}
+
+	value = l.last.Value
+	l.last = l.first
+	return value, err
 }
 
 func (l *List) Reverse() {
