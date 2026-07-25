@@ -78,6 +78,10 @@ func (l *List) Shift() (value any, err error) {
 	next := l.first.next
 	l.first = next
 
+	if l.Count() == 0 {
+		*l = *NewList()
+	}
+
 	return value, err
 }
 
@@ -113,7 +117,16 @@ func (l *List) Last() *Node {
 }
 
 func (l *List) Count() int {
-	panic("Please implement the Count function")
+	result := 0
+	lCopy := *l
+	node := lCopy.first
+
+	for node != nil {
+		result = result + 1
+		node = node.next
+	}
+
+	return result
 }
 
 // Delete removes the first node in a list with a given value.
