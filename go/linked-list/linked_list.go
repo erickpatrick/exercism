@@ -109,11 +109,11 @@ func (l *List) Reverse() {
 }
 
 func (l *List) First() *Node {
-	panic("Please implement the First function")
+	return l.first
 }
 
 func (l *List) Last() *Node {
-	panic("Please implement the Last function")
+	return l.last
 }
 
 func (l *List) Count() int {
