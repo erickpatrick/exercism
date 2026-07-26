@@ -2,6 +2,7 @@ package linkedlist
 
 import (
 	"errors"
+	"fmt"
 )
 
 // Define List and Node types here.
@@ -18,30 +19,23 @@ type List struct {
 }
 
 func NewList(elements ...any) *List {
-	length := len(elements)
-	newList := List{}
+	l := &List{}
 	var prevNode *Node
 
-	for i, element := range elements {
+	for _, element := range elements {
 		newNode := Node{Value: element, previous: prevNode}
-		prevNode = &newNode
 
-		if i == 0 {
-			newList.first = &newNode
-			newList.last = &newNode
-		}
-
-		if i > 0 {
+		if l.first == nil && l.last == nil {
+			l.first = &newNode
+			l.last = &newNode
+		} else {
 			prevNode.next = &newNode
 		}
 
-		if i == length-1 {
-			newList.last = &newNode
-			newNode.next = nil
-		}
+		prevNode = &newNode
 	}
 
-	return &newList
+	return l
 }
 
 func (n *Node) Next() *Node {
