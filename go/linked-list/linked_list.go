@@ -2,7 +2,6 @@ package linkedlist
 
 import (
 	"errors"
-	"fmt"
 )
 
 // Define List and Node types here.
@@ -30,6 +29,7 @@ func NewList(elements ...any) *List {
 			l.last = &newNode
 		} else {
 			prevNode.next = &newNode
+			l.last = &newNode
 		}
 
 		prevNode = &newNode
@@ -94,7 +94,7 @@ func (l *List) Pop() (value any, err error) {
 	}
 
 	value = l.last.Value
-	l.last = l.first
+	l.last = l.last.previous
 	return value, err
 }
 
@@ -125,6 +125,33 @@ func (l *List) Count() int {
 
 // Delete removes the first node in a list with a given value.
 // Returns true if a node was removed.
-func (ll *List) Delete(v any) bool {
-	panic("Please implement the Delete function")
+func (ll *List) Delete(v any) (found bool) {
+	node := ll.First()
+
+	for node != nil {
+		if node.Value == v {
+			found = true
+			if ll.Count() == 1 {
+				*ll = *NewList()
+			}
+
+			// node.previous == nil should mean it's the first element in the linked list
+			if node.previous == nil {
+				ll.first = node.next
+			} else {
+				node.previous.next = node.next
+				if node.next == nil {
+					ll.last = node.previous
+				} else {
+					node.next.previous = node.previous
+				}
+			}
+
+			break
+		}
+
+		node = node.next
+	}
+
+	return found
 }
