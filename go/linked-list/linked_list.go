@@ -39,16 +39,24 @@ func NewList(elements ...any) *List {
 }
 
 func (n *Node) Next() *Node {
-	return n.previous
-}
-
-func (n *Node) Prev() *Node {
 	return n.next
 }
 
+func (n *Node) Prev() *Node {
+	return n.previous
+}
+
 func (l *List) Unshift(v any) {
-	newNode := Node{Value: v, next: l.first}
-	l.first = &newNode
+	current := l.First()
+
+	newNode := &Node{Value: v, next: current}
+	l.first = newNode
+
+	if l.Count() < 2 {
+		l.last = newNode
+	} else {
+		current.previous = newNode
+	}
 }
 
 func (l *List) Push(v any) {
