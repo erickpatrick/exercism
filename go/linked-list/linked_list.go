@@ -78,6 +78,7 @@ func (l *List) Shift() (value any, err error) {
 
 	value = l.first.Value
 	next := l.first.next
+	next.previous = nil
 	l.first = next
 
 	if l.Count() == 0 {
