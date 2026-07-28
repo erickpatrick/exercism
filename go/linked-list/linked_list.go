@@ -115,6 +115,8 @@ func (l *List) Pop() (value any, err error) {
 
 	value = l.Last().Value
 	l.last = l.Last().Prev()
+	l.Last().next = nil
+
 	return value, err
 }
 
