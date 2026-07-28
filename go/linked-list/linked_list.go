@@ -100,21 +100,21 @@ func (l *List) Shift() (value any, err error) {
 }
 
 func (l *List) Pop() (value any, err error) {
-	if l.first == nil {
+	if l.Last() == nil {
 		err := errors.New("")
 		return value, err
 	}
 
-	if *l.first == *l.last {
-		value = l.first.Value
+	if l.First() == l.Last() {
+		value = l.First().Value
 		l.first = nil
 		l.last = nil
 
 		return value, err
 	}
 
-	value = l.last.Value
-	l.last = l.last.previous
+	value = l.Last().Value
+	l.last = l.Last().Prev()
 	return value, err
 }
 
