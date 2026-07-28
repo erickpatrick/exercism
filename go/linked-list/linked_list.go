@@ -39,10 +39,18 @@ func NewList(elements ...any) *List {
 }
 
 func (n *Node) Next() *Node {
+	if n == nil {
+		return nil
+	}
+
 	return n.next
 }
 
 func (n *Node) Prev() *Node {
+	if n == nil {
+		return nil
+	}
+
 	return n.previous
 }
 
@@ -71,15 +79,18 @@ func (l *List) Push(v any) {
 }
 
 func (l *List) Shift() (value any, err error) {
-	if l.first == nil {
+	if l.First() == nil {
 		err := errors.New("")
 		return value, err
 	}
 
-	value = l.first.Value
-	next := l.first.next
-	next.previous = nil
+	value = l.First().Value
+	next := l.First().Next()
 	l.first = next
+
+	if l.First() != nil {
+		next.previous = nil
+	}
 
 	if l.Count() == 0 {
 		*l = *NewList()
