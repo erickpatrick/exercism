@@ -121,7 +121,15 @@ func (l *List) Pop() (value any, err error) {
 }
 
 func (l *List) Reverse() {
-	panic("Please implement the Reverse function")
+	currentLast := l.Last()
+	var values []any
+
+	for currentLast != nil {
+		values = append(values, currentLast.Value)
+		currentLast = currentLast.Prev()
+	}
+
+	*l = *NewList(values...)
 }
 
 func (l *List) First() *Node {
