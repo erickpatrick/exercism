@@ -24,7 +24,7 @@ func NewList(elements ...any) *List {
 	for _, element := range elements {
 		newNode := Node{Value: element, previous: prevNode}
 
-		if l.first == nil && l.last == nil {
+		if l.First() == nil && l.Last() == nil {
 			l.first = &newNode
 			l.last = &newNode
 		} else {
@@ -68,7 +68,7 @@ func (l *List) Unshift(v any) {
 }
 
 func (l *List) Push(v any) {
-	if l.first == nil && l.last == nil {
+	if l.First() == nil && l.Last() == nil {
 		nl := NewList(v)
 		*l = *nl
 	} else {
@@ -133,11 +133,11 @@ func (l *List) Last() *Node {
 func (l *List) Count() int {
 	result := 0
 	lCopy := *l
-	node := lCopy.first
+	node := lCopy.First()
 
 	for node != nil {
 		result = result + 1
-		node = node.next
+		node = node.Next()
 	}
 
 	return result
@@ -156,21 +156,21 @@ func (ll *List) Delete(v any) (found bool) {
 			}
 
 			// node.previous == nil should mean it's the first element in the linked list
-			if node.previous == nil {
-				ll.first = node.next
+			if node.Prev() == nil {
+				ll.first = node.Next()
 			} else {
-				node.previous.next = node.next
-				if node.next == nil {
-					ll.last = node.previous
+				node.Prev().next = node.Next()
+				if node.Next() == nil {
+					ll.last = node.Prev()
 				} else {
-					node.next.previous = node.previous
+					node.Next().previous = node.Prev()
 				}
 			}
 
 			break
 		}
 
-		node = node.next
+		node = node.Next()
 	}
 
 	return found
