@@ -43,11 +43,24 @@ func (tr *Tree) String() string {
 
 // FromPov returns the pov from the node specified in the argument.
 func (tr *Tree) FromPov(from string) *Tree {
-	if tr.root == from {
+	if tr.Value() == from {
 		return tr
 	}
 
-	return tr
+	newTree := New("", New(tr.Value()))
+
+	for _, child := range tr.Children() {
+		if newTree.Value() != "" {
+			newTree.children = append(newTree.children, child.children...)
+		}
+
+		if child.Value() == from {
+			newTree.root = from
+			newTree.children = append(newTree.children, child.children...)
+		}
+	}
+
+	return newTree
 }
 
 // PathTo returns the shortest path between two nodes in the tree.
