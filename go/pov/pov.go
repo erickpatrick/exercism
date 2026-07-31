@@ -50,7 +50,7 @@ func (tr *Tree) FromPov(from string) *Tree {
 	// root := New("", New(tr.Value()))
 	var root *Tree
 	var result *Tree
-	parent := tr.Value()
+	parent := New(tr.Value())
 
 	for _, child := range tr.Children() {
 		if child.Value() == from {
@@ -60,11 +60,11 @@ func (tr *Tree) FromPov(from string) *Tree {
 		}
 
 		if result != nil && root == nil {
-			root = New(result.Value(), New(parent))
+			root = New(result.Value(), parent)
 		}
 
 		if result == nil && root != nil {
-			root.children = append(root.children, child)
+			parent.children = append(parent.children, child)
 		}
 	}
 
