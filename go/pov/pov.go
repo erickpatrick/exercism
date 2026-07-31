@@ -47,20 +47,28 @@ func (tr *Tree) FromPov(from string) *Tree {
 		return tr
 	}
 
-	newTree := New("", New(tr.Value()))
+	// root := New("", New(tr.Value()))
+	var root *Tree
+	var result *Tree
+	parent := tr.Value()
 
 	for _, child := range tr.Children() {
-		if newTree.Value() != "" {
-			newTree.children = append(newTree.children, child.children...)
+		if child.Value() == from {
+			result = child
+		} else {
+			result = child.FromPov(from)
 		}
 
-		if child.Value() == from {
-			newTree.root = from
-			newTree.children = append(newTree.children, child.children...)
+		if result != nil && root == nil {
+			root = New(result.Value(), New(parent))
+		}
+
+		if result == nil && root != nil {
+			root.children = append(root.children, child)
 		}
 	}
 
-	return newTree
+	return root
 }
 
 // PathTo returns the shortest path between two nodes in the tree.
