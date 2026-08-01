@@ -66,6 +66,10 @@ func (tr *Tree) FromPov(from string) *Tree {
 		if result == nil && root != nil {
 			parent.children = append(parent.children, child)
 		}
+
+		if result == nil && root == nil {
+			parent.children = append(parent.children, child)
+		}
 	}
 
 	return root
