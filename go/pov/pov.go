@@ -1,5 +1,7 @@
 package pov
 
+import "fmt"
+
 type Tree struct {
 	root     string
 	children []*Tree
@@ -53,15 +55,22 @@ func (tr *Tree) FromPov(from string) *Tree {
 	parent := New(tr.Value())
 
 	for _, child := range tr.Children() {
-		if child.Value() == from {
-			result = child
-		} else {
-			result = child.FromPov(from)
-		}
+		result = child.FromPov(from)
+		fmt.Println(child.Value(), result, root)
 
 		if result != nil && root == nil {
 			root = New(result.Value(), parent)
 		}
+
+		if result != nil && root != nil && result.children != nil {
+			head := result.children[:1]
+			tail := result.children[1:]
+			root.children = append([]*Tree{}, New(head[0].Value(), append(tail, parent)...))
+		}
+
+		// if result != nil && result.children == nil {
+		// 	root.children =
+		// }
 
 		if result == nil && root != nil {
 			parent.children = append(parent.children, child)
@@ -71,6 +80,8 @@ func (tr *Tree) FromPov(from string) *Tree {
 			parent.children = append(parent.children, child)
 		}
 	}
+
+	fmt.Println("root", root)
 
 	return root
 }
