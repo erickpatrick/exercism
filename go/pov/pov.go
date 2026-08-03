@@ -51,21 +51,21 @@ func (tr *Tree) FromPov(from string) *Tree {
 
 	// root := New("", New(tr.Value()))
 	var root *Tree
-	var result *Tree
+	var found *Tree
 	parent := New(tr.Value())
 
 	for _, child := range tr.Children() {
-		result = child.FromPov(from)
+		found = child.FromPov(from)
 
-		if result != nil && root == nil {
-			root = New(result.Value(), parent)
+		if found != nil && root == nil {
+			root = New(found.Value(), parent)
 		}
 
-		if result == nil && root != nil {
+		if found == nil && root != nil {
 			parent.children = append(parent.children, child)
 		}
 
-		if result == nil && root == nil {
+		if found == nil && root == nil {
 			parent.children = append(parent.children, child)
 		}
 	}
