@@ -56,21 +56,10 @@ func (tr *Tree) FromPov(from string) *Tree {
 
 	for _, child := range tr.Children() {
 		result = child.FromPov(from)
-		fmt.Println(child.Value(), result, root)
 
 		if result != nil && root == nil {
 			root = New(result.Value(), parent)
 		}
-
-		if result != nil && root != nil && result.children != nil {
-			head := result.children[:1]
-			tail := result.children[1:]
-			root.children = append([]*Tree{}, New(head[0].Value(), append(tail, parent)...))
-		}
-
-		// if result != nil && result.children == nil {
-		// 	root.children =
-		// }
 
 		if result == nil && root != nil {
 			parent.children = append(parent.children, child)
