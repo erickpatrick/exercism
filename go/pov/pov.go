@@ -1,5 +1,7 @@
 package pov
 
+import "fmt"
+
 type Tree struct {
 	root     string
 	children []*Tree
@@ -82,7 +84,7 @@ func (tr *Tree) FromPov(from string) *Tree {
 				// fmt.Println("more than one child")
 				children = append(found.Children(), parent)
 			}
-			// fmt.Println("---")
+			fmt.Println("---")
 			root = New(found.Value())
 			root.children = children
 		}
