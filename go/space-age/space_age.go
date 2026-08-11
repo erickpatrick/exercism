@@ -16,9 +16,11 @@ func Age(seconds float64, planet Planet) float64 {
 		"Neptune": 164.79132,
 	}
 
-	if rate[planet] == 0.0 {
+	period, ok := rate[planet]
+
+	if !ok {
 		return -1.0
 	}
 
-	return seconds / SecondsInADay / (rate[planet] * EarthDays)
+	return seconds / SecondsInADay / (period * EarthDays)
 }
