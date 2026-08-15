@@ -8,28 +8,15 @@ import (
 type Frequency map[string]int
 
 func WordCount(phrase string) Frequency {
-	cleanPhrase := strings.ToLower(phrase)
-	cleanPhrase = strings.ReplaceAll(cleanPhrase, "\n", ".")
-	cleanPhrase = strings.ReplaceAll(cleanPhrase, "\t", ".")
-	cleanPhrase = strings.ReplaceAll(cleanPhrase, " ", ".")
+	phrase = strings.ToLower(phrase)
 
-	nonAlphanumericRegex := regexp.MustCompile(`[^a-zA-Z0-9 ]+`)
-	cleanPhrase = nonAlphanumericRegex.ReplaceAllString(cleanPhrase, " ")
-
-	cleanPhrase = strings.ReplaceAll(cleanPhrase, " t ", "'t ")
-	cleanPhrase = strings.ReplaceAll(cleanPhrase, " re ", "'re ")
-
-	words := strings.Split(strings.TrimSpace(cleanPhrase), " ")
-
-	freq := make(map[string]int)
+	// checks for word with possible word'word combination
+	regex, _ := regexp.Compile(`[\w]+(?:'[\w]+)*`)
+	words := regex.FindAllString(phrase, -1)
+	freq := make(Frequency)
 
 	for _, word := range words {
-		if value, exists := freq[word]; !exists {
-			freq[word] = 1
-		} else {
-			freq[word] = value + 1
-		}
+		freq[word]++
 	}
-
 	return freq
 }
