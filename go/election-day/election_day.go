@@ -23,7 +23,7 @@ func IncrementVoteCount(counter *int, increment int) {
 
 // NewElectionResult creates a new election result.
 func NewElectionResult(candidateName string, votes int) *ElectionResult {
-	panic("Please implement the NewElectionResult() function")
+	return &ElectionResult{Name: candidateName, Votes: votes}
 }
 
 // DisplayResult creates a message with the result to be displayed.
