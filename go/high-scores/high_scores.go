@@ -21,7 +21,18 @@ func (s *HighScores) Latest() int {
 
 // PersonalBest returns the best (highest) score.
 func (s *HighScores) PersonalBest() int {
-	panic("Please implement the PersonalBest function")
+	max := 0
+	for key, value := range s.scores {
+		if key == 0 {
+			max = value
+		}
+
+		if value > max {
+			max = value
+		}
+	}
+
+	return max
 }
 
 // TopThree returns the top three scores.
