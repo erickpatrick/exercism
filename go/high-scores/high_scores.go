@@ -11,12 +11,12 @@ func NewHighScores(scores []int) *HighScores {
 
 // Scores returns all the scores.
 func (s *HighScores) Scores() []int {
-	panic("Please implement the Scores function")
+	return s.scores
 }
 
 // Latest returns the latest (last) score.
 func (s *HighScores) Latest() int {
-	panic("Please implement the Latest function")
+	return s.scores[len(s.scores)-1]
 }
 
 // PersonalBest returns the best (highest) score.
