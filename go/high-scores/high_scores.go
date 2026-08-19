@@ -1,5 +1,9 @@
 package highscores
 
+import (
+	"sort"
+)
+
 type HighScores struct {
 	scores []int
 }
@@ -37,5 +41,13 @@ func (s *HighScores) PersonalBest() int {
 
 // TopThree returns the top three scores.
 func (s *HighScores) TopThree() []int {
-	panic("Please implement the TopThree function")
+	toSort := append([]int{}, s.scores...)
+
+	sort.Slice(toSort, func(i, j int) bool { return toSort[i] > toSort[j] })
+
+	if len(toSort) < 3 {
+		return toSort
+	}
+
+	return toSort[:3]
 }
