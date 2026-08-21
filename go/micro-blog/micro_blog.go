@@ -1,17 +1,11 @@
 package microblog
 
-import "fmt"
-
 func Truncate(phrase string) (result string) {
-	counter := 1
+	r := []rune(phrase)
 
-	for _, r := range phrase {
-		result += fmt.Sprintf("%c", r)
-		counter++
-		if counter > 5 {
-			break
-		}
+	if len(r) < 5 {
+		return string(r)
 	}
 
-	return result
+	return string(r[:5])
 }
