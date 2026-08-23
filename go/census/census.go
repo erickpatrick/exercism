@@ -20,7 +20,7 @@ func (r *Resident) HasRequiredInfo() bool {
 
 // Delete deletes a resident's information.
 func (r *Resident) Delete() {
-	panic("Please implement Delete.")
+	*r = Resident{}
 }
 
 // Count counts all residents that have provided the required information.
