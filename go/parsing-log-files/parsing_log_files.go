@@ -1,7 +1,6 @@
 package parsinglogfiles
 
 import (
-	"fmt"
 	"regexp"
 )
 
@@ -12,12 +11,10 @@ func IsValidLine(text string) bool {
 
 func SplitLogLine(text string) []string {
 	re := regexp.MustCompile("<[~*=-]*>")
-	fmt.Println(re.Split(text, -1))
 	return re.Split(text, -1)
 }
 
 func CountQuotedPasswords(lines []string) int {
-	panic("Please implement the CountQuotedPasswords function")
 }
 
 func RemoveEndOfLineText(text string) string {
