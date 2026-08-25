@@ -24,7 +24,7 @@ func ValidateInputAndDivideFood(calculator FodderCalculator, n int) (float64, er
 		return 0, errors.New("invalid number of cows")
 	}
 
-	return 0, nil
+	return DivideFood(calculator, n)
 }
 
 type InvalidCowsError struct {
