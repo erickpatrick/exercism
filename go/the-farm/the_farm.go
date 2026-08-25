@@ -36,7 +36,6 @@ func (e *InvalidCowsError) Error() string {
 	return fmt.Sprintf("%d cows are invalid: %s", e.cows, e.message)
 }
 
-// TODO: define the 'ValidateNumberOfCows' function
 func ValidateNumberOfCows(n int) error {
 	if n < 0 {
 		return &InvalidCowsError{cows: n, message: "there are no negative cows"}
