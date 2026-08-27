@@ -17,7 +17,7 @@ func Nth(n int) (int, error) {
 			primes = append(primes, counter)
 		}
 
-		if len(primes) >= n || counter > 50 {
+		if len(primes) >= n {
 			break
 		}
 
