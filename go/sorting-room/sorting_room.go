@@ -45,7 +45,12 @@ func ExtractFancyNumber(fnb FancyNumberBox) int {
 
 // DescribeFancyNumberBox should return a string describing the FancyNumberBox.
 func DescribeFancyNumberBox(fnb FancyNumberBox) string {
-	panic("Please implement DescribeFancyNumberBox")
+	if _, ok := fnb.(FancyNumber); ok {
+		n := ExtractFancyNumber(fnb)
+		return fmt.Sprintf("This is a fancy box containing the number %.1f", float64(n))
+	}
+
+	return fmt.Sprintf("This is a fancy box containing the number %.1f", 0.0)
 }
 
 // DescribeAnything should return a string describing whatever it contains.
