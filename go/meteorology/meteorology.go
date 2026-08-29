@@ -31,7 +31,8 @@ const (
 )
 
 func (su SpeedUnit) String() string {
-	return ""
+	units := []string{"km/h", "mph"}
+	return units[su]
 }
 
 type Speed struct {
