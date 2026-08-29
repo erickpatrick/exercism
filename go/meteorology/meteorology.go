@@ -1,5 +1,7 @@
 package meteorology
 
+import "fmt"
+
 type TemperatureUnit int
 
 const (
@@ -20,7 +22,7 @@ type Temperature struct {
 
 // Add a String method to the Temperature type
 func (t Temperature) String() string {
-	return ""
+	return fmt.Sprintf("%v %v", t.degree, t.unit)
 }
 
 type SpeedUnit int
