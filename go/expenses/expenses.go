@@ -37,7 +37,9 @@ func ByDaysPeriod(p DaysPeriod) func(Record) bool {
 // the category of the record is the same as the provided category
 // and false otherwise.
 func ByCategory(c string) func(Record) bool {
-	panic("Please implement the ByCategory function")
+	return func(r Record) bool {
+		return r.Category == c
+	}
 }
 
 // TotalByPeriod returns total amount of expenses for records
