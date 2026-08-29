@@ -41,7 +41,7 @@ type Speed struct {
 }
 
 func (s Speed) String() string {
-	return ""
+	return fmt.Sprintf("%v %v", s.magnitude, s.unit)
 }
 
 type MeteorologyData struct {
