@@ -31,7 +31,8 @@ func (r *Robot) Name() (string, error) {
 }
 
 func (r *Robot) Reset() {
-	panic("Please implement the Reset function")
+	name, _ := generateRobotName()
+	r.name = name
 }
 
 func generateRobotName() (string, error) {
@@ -39,20 +40,24 @@ func generateRobotName() (string, error) {
 		return "", errors.New("reached maximum names possible")
 	}
 
-	prefix := make([]byte, 2)
-	for i := range prefix {
-		prefix[i] = letters[rand.Int63()%int64(len(letters))]
-	}
+	var robotName string
+	next := true
+	for next {
+		prefix := make([]byte, 2)
+		for i := range prefix {
+			prefix[i] = letters[rand.Int63()%int64(len(letters))]
+		}
 
-	appendix := make([]byte, 3)
-	for i := range appendix {
-		appendix[i] = numbers[rand.Int63()%int64(len(numbers))]
-	}
+		appendix := make([]byte, 3)
+		for i := range appendix {
+			appendix[i] = numbers[rand.Int63()%int64(len(numbers))]
+		}
 
-	robotName := strings.ToUpper(string(prefix) + string(appendix))
+		robotName = strings.ToUpper(string(prefix) + string(appendix))
 
-	if _, ok := robotNames[robotName]; ok {
-		return generateRobotName()
+		if _, ok := robotNames[robotName]; !ok {
+			next = false
+		}
 	}
 
 	robotNames[robotName] = true
