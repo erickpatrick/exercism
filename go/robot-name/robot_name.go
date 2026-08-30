@@ -12,8 +12,10 @@ type Robot struct {
 
 const (
 	maxRobotNames = 26 * 26 * 10 * 10 * 10
-	letters       = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	numbers       = "0123456789"
+	// to simplify code and simply use  randInt63() instead of making more
+	// calculations
+	letters = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	numbers = "0123456789"
 )
 
 var robotNames = map[string]bool{}
@@ -42,6 +44,9 @@ func generateRobotName() (string, error) {
 
 	var robotName string
 	next := true
+
+	// uses for loop as otheriwse the recursive version would have ended up
+	// into stackoverflow
 	for next {
 		prefix := make([]byte, 2)
 		for i := range prefix {
