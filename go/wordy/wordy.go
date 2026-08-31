@@ -45,14 +45,7 @@ func doSimpleOperation(parts []string) (int, bool) {
 		return 0, false
 	}
 
-	val2 := 0
-	exists = false
-	if len(parts) == 3 {
-		val2, exists = naturalNumber(parts[2])
-	}
-	if len(parts) == 4 {
-		val2, exists = naturalNumber(parts[3])
-	}
+	val2, exists := naturalNumber(parts[len(parts)-1])
 
 	if !exists {
 		return 0, false
