@@ -1,7 +1,6 @@
 package wordy
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -19,11 +18,10 @@ func Answer(question string) (int, bool) {
 	case 1:
 		return naturalNumber(parts[0])
 	case 3, 4:
-		return doOperation(parts)
+		return doSimpleOperation(parts)
+	case 5, 6, 7:
+		return doMultipleOperation(parts)
 	}
-
-	// group1 = first number
-	// group3 =
 
 	return 0, false
 }
@@ -37,70 +35,56 @@ func naturalNumber(num string) (int, bool) {
 	return i, true
 }
 
-func doOperation(parts []string) (int, bool) {
-	fmt.Println(parts)
+func doSimpleOperation(parts []string) (int, bool) {
+	if len(parts) == 4 && parts[2] != "by" {
+		return 0, false
+	}
+
+	val1, exists := naturalNumber(parts[0])
+	if !exists {
+		return 0, false
+	}
+
+	val2 := 0
+	exists = false
+	if len(parts) == 3 {
+		val2, exists = naturalNumber(parts[2])
+	}
+	if len(parts) == 4 {
+		val2, exists = naturalNumber(parts[3])
+	}
+
+	if !exists {
+		return 0, false
+	}
+
 	switch parts[1] {
 	case "plus":
-		return sum(parts[0], parts[2])
+		return val1 + val2, true
 	case "minus":
-		return subtract(parts[0], parts[2])
+		return val1 - val2, true
 	case "multiplied":
-		return multiply(parts[0], parts[3])
+		return val1 * val2, true
 	case "divided":
-		return divide(parts[0], parts[3])
+		return val1 / val2, true
 	default:
 		return 0, false
 	}
 }
 
-func sum(num1 string, num2 string) (int, bool) {
-	val1, exists := naturalNumber(num1)
-	if !exists {
+func doMultipleOperation(parts []string) (int, bool) {
+	limit := 3
+	if parts[2] == "by" {
+		limit = 4
+	}
+	result1, worked := doSimpleOperation(parts[0:limit])
+	if !worked {
 		return 0, false
 	}
 
-	val2, exists := naturalNumber(num2)
-	if !exists {
-		return 0, false
-	}
-	return val1 + val2, true
-}
+	newParts := []string{}
+	newParts = append(newParts, strconv.Itoa(result1))
+	newParts = append(newParts, parts[limit:]...)
 
-func subtract(num1 string, num2 string) (int, bool) {
-	val1, exists := naturalNumber(num1)
-	if !exists {
-		return 0, false
-	}
-
-	val2, exists := naturalNumber(num2)
-	if !exists {
-		return 0, false
-	}
-	return val1 - val2, true
-}
-
-func multiply(num1 string, num2 string) (int, bool) {
-	val1, exists := naturalNumber(num1)
-	if !exists {
-		return 0, false
-	}
-
-	val2, exists := naturalNumber(num2)
-	if !exists {
-		return 0, false
-	}
-	return val1 * val2, true
-}
-
-func divide(num1 string, num2 string) (int, bool) {
-	val1, exists := naturalNumber(num1)
-	if !exists {
-		return 0, false
-	}
-
-	val2, exists := naturalNumber(num2)
-	if !exists {
-		return 0, false
-	}
-	return val1 / val2, true
+	return doSimpleOperation(newParts)
 }
