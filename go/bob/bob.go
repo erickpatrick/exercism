@@ -20,7 +20,7 @@ func Hey(remark string) string {
 
 	hasLower := false
 	hasUpper := false
-	hasQuestionMark := remark[len(remark)-1] == '?'
+	hasQuestionMark := strings.HasSuffix(remark, "?")
 
 	for _, r := range remark {
 		if unicode.IsLetter(r) {
