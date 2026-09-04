@@ -6,8 +6,8 @@
 package bob
 
 import (
-	"regexp"
 	"strings"
+	"unicode"
 )
 
 // Hey should have a comment documenting it.
@@ -17,25 +17,35 @@ func Hey(remark string) string {
 	// fmt.Println("`", remark, "`")
 	// fmt.Println("---")
 
-	isEmpty := regexp.MustCompile(`^\s+$`)
-
-	if isEmpty.MatchString(remark) || remark == "" {
+	if remark == "" {
 		return "Fine. Be that way!"
 	}
 
-	isQuestion := remark[len(remark)-1] == '?'
-	isYelling := regexp.MustCompile(`([[:upper:]]|[0-9])\b{2,}`)
-	isNormal := regexp.MustCompile(`([[:lower:]]|[0-9])+`)
+	hasLower := false
+	hasUpper := false
+	hasQuestionMark := remark[len(remark)-1] == '?'
 
-	if isQuestion {
-		if isYelling.MatchString(remark) && !isNormal.MatchString(remark) {
+	for _, r := range remark {
+		if unicode.IsLetter(r) {
+			if unicode.IsUpper(r) {
+				hasUpper = true
+			}
+
+			if unicode.IsLower(r) {
+				hasLower = true
+			}
+		}
+	}
+
+	if hasQuestionMark {
+		if hasUpper && !hasLower {
 			return "Calm down, I know what I'm doing!"
 		}
 
 		return "Sure."
 	}
 
-	if isYelling.MatchString(remark) && !isNormal.MatchString(remark) {
+	if hasUpper && !hasLower {
 		return "Whoa, chill out!"
 	}
 
