@@ -12,10 +12,7 @@ import (
 
 // Hey should have a comment documenting it.
 func Hey(remark string) string {
-	// fmt.Println("`", remark, "`")
 	remark = strings.TrimSpace(remark)
-	// fmt.Println("`", remark, "`")
-	// fmt.Println("---")
 
 	if remark == "" {
 		return "Fine. Be that way!"
