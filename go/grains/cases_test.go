@@ -1,0 +1,77 @@
+package grains
+
+// This is an auto-generated file. Do not change it manually. Run the generator to update the file.
+// See https://github.com/exercism/go#synchronizing-tests-and-instructions
+// Source: exercism/problem-specifications
+// Commit: 25c2ae5 build(deps): bump fast-uri from 3.1.0 to 3.1.2 (#2653)
+
+// returns the number of grains on the square
+type testCase struct {
+	description string
+	input       int
+	expectedVal uint64
+	expectError bool
+}
+
+var squareTests = []testCase{
+	{
+		description: "grains on square 1",
+		input:       1,
+		expectedVal: 1,
+		expectError: false,
+	},
+	{
+		description: "grains on square 2",
+		input:       2,
+		expectedVal: 2,
+		expectError: false,
+	},
+	{
+		description: "grains on square 3",
+		input:       3,
+		expectedVal: 4,
+		expectError: false,
+	},
+	{
+		description: "grains on square 4",
+		input:       4,
+		expectedVal: 8,
+		expectError: false,
+	},
+	{
+		description: "grains on square 16",
+		input:       16,
+		expectedVal: 32768,
+		expectError: false,
+	},
+	{
+		description: "grains on square 32",
+		input:       32,
+		expectedVal: 2147483648,
+		expectError: false,
+	},
+	{
+		description: "grains on square 64",
+		input:       64,
+		expectedVal: 9223372036854775808,
+		expectError: false,
+	},
+	{
+		description: "square 0 is invalid",
+		input:       0,
+		expectedVal: 0,
+		expectError: true,
+	},
+	{
+		description: "negative square is invalid",
+		input:       -1,
+		expectedVal: 0,
+		expectError: true,
+	},
+	{
+		description: "square greater than 64 is invalid",
+		input:       65,
+		expectedVal: 0,
+		expectError: true,
+	},
+}
