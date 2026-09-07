@@ -1,7 +1,6 @@
 package atbashcipher
 
 import (
-	"slices"
 	"strings"
 	"unicode"
 )
@@ -12,22 +11,22 @@ const (
 )
 
 func Atbash(s string) string {
-	converted := []string{}
+	final := ""
 	// convert letters
 	for _, letter := range strings.ToLower(s) {
 		if unicode.IsNumber(letter) {
-			converted = append(converted, string(letter))
+			final = final + string(letter)
 		}
 
 		if unicode.IsLetter(letter) && (letter >= startLetter || letter <= finalLetter) {
-			converted = append(converted, string(rune(finalLetter-(letter-startLetter))))
+			final = final + string(rune(finalLetter-(letter-startLetter)))
+		}
+
+		// split in groups of 5
+		if len(final)%6 == 5 {
+			final = final + " "
 		}
 	}
 
-	final := []string{}
-	for chunk := range slices.Chunk(converted, 5) {
-		final = append(final, strings.Join(chunk, ""))
-	}
-
-	return strings.Join(final, " ")
+	return strings.TrimSuffix(final, " ")
 }
