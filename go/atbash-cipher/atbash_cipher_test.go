@@ -1,0 +1,22 @@
+package atbashcipher
+
+import "testing"
+
+func TestAtbash(t *testing.T) {
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			actual := Atbash(tc.phrase)
+			if actual != tc.expected {
+				t.Errorf("Atbash(%q): want: %q, got: %q", tc.phrase, tc.expected, actual)
+			}
+		})
+	}
+}
+
+func BenchmarkAtbash(b *testing.B) {
+	for b.Loop() {
+		for _, test := range testCases {
+			Atbash(test.phrase)
+		}
+	}
+}
