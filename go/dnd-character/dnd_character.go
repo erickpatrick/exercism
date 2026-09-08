@@ -2,6 +2,8 @@ package dndcharacter
 
 import (
 	"math"
+	"math/rand/v2"
+	"slices"
 )
 
 type Character struct {
@@ -21,7 +23,17 @@ func Modifier(score int) int {
 
 // Ability uses randomness to generate the score for an ability
 func Ability() int {
-	panic("Please implement the Ability() function")
+	rolls := []int{rand.IntN(5) + 1, rand.IntN(5) + 1, rand.IntN(5) + 1, rand.IntN(5) + 1}
+	slices.Sort(rolls)
+
+	total := 0
+	for key, value := range rolls {
+		if key == 0 {
+			continue
+		}
+		total += value
+	}
+	return total
 }
 
 // GenerateCharacter creates a new Character with random scores for abilities
