@@ -23,7 +23,7 @@ func Modifier(score int) int {
 
 // Ability uses randomness to generate the score for an ability
 func Ability() int {
-	rolls := []int{rand.IntN(5) + 1, rand.IntN(5) + 1, rand.IntN(5) + 1, rand.IntN(5) + 1}
+	rolls := []int{rand.IntN(6) + 1, rand.IntN(6) + 1, rand.IntN(6) + 1, rand.IntN(6) + 1}
 	slices.Sort(rolls)
 
 	total := 0
