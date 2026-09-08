@@ -33,10 +33,18 @@ func Ability() int {
 		}
 		total += value
 	}
+
 	return total
 }
 
 // GenerateCharacter creates a new Character with random scores for abilities
 func GenerateCharacter() Character {
-	panic("Please implement the GenerateCharacter() function")
+	rolls := []int{}
+	for range 6 {
+		rolls = append(rolls, Ability())
+	}
+
+	hitpoints := 10 + Modifier(rolls[2])
+
+	return Character{Strength: rolls[0], Dexterity: rolls[1], Constitution: rolls[2], Intelligence: rolls[3], Wisdom: rolls[4], Charisma: rolls[5], Hitpoints: hitpoints}
 }
