@@ -3,11 +3,7 @@ package series
 func All(n int, s string) []string {
 	result := []string{}
 
-	if n > len(s) {
-		return result
-	}
-
-	if n < 1 {
+	if n > len(s) || n < 1 {
 		return result
 	}
 
