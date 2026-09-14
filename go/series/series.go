@@ -32,3 +32,12 @@ func UnsafeFirst(n int, s string) string {
 
 	return s[0:n]
 }
+
+func First(n int, s string) (first string, ok bool) {
+	first = UnsafeFirst(n, s)
+	if first == "" {
+		return first, false
+	}
+
+	return first, true
+}
