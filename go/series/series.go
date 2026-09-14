@@ -26,5 +26,9 @@ func All(n int, s string) []string {
 }
 
 func UnsafeFirst(n int, s string) string {
-	return ""
+	if n > len(s) || n < 1 {
+		return ""
+	}
+
+	return s[0:n]
 }
