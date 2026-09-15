@@ -3,6 +3,8 @@ package largestseriesproduct
 import (
 	"errors"
 	"regexp"
+	"slices"
+	"strconv"
 	"strings"
 )
 
@@ -16,14 +18,23 @@ func LargestSeriesProduct(digits string, span int) (int64, error) {
 		return 0, errors.New("invalid digits")
 	}
 
-	// parts := All(span, digits)
+	products := []int64{}
+	sequencies := All(span, digits)
 
-	// fmt.Println(parts)
+	for _, sequence := range sequencies {
+		product := int64(1)
+		for _, value := range sequence {
+			val, _ := strconv.Atoi(string(value))
+			product = product * int64(val)
+		}
+		products = append(products, product)
+	}
 
-	return 0, nil
+	slices.Sort(products)
+
+	return products[len(products)-1], nil
 }
 
-// copied over from go/series exercise
 func All(n int, s string) []string {
 	result := []string{}
 
