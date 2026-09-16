@@ -7,6 +7,7 @@ func Sieve(limit int) []int {
 		for j := i - 1; j >= 2; j-- {
 			if i%j == 0 {
 				add = false
+				break
 			}
 		}
 
