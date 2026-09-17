@@ -15,11 +15,11 @@ func (n Number) Imaginary() float64 {
 }
 
 func (n1 Number) Add(n2 Number) Number {
-	return Number{a: n1.a + n2.a, b: (n1.b + n2.b)}
+	return Number{a: n1.a + n2.a, b: n1.b + n2.b}
 }
 
 func (n1 Number) Subtract(n2 Number) Number {
-	panic("Please implement the Subtract method")
+	return Number{a: n1.a - n2.a, b: n1.b - n2.b}
 }
 
 func (n1 Number) Multiply(n2 Number) Number {
