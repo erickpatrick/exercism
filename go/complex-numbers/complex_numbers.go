@@ -1,5 +1,7 @@
 package complexnumbers
 
+import "math"
+
 // Define the Number type here.
 type Number struct {
 	a float64
@@ -39,7 +41,7 @@ func (n Number) Conjugate() Number {
 }
 
 func (n Number) Abs() float64 {
-	panic("Please implement the Abs method")
+	return math.Sqrt(n.a*n.a + n.b*n.b)
 }
 
 func (n Number) Exp() Number {
