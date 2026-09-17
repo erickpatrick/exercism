@@ -45,5 +45,6 @@ func (n Number) Abs() float64 {
 }
 
 func (n Number) Exp() Number {
-	panic("Please implement the Exp method")
+	n2 := Number{a: math.Cos(n.b), b: math.Sin(n.b)}
+	return n2.Times(math.Pow(math.E, n.a))
 }
